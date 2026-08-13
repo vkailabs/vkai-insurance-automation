@@ -27,3 +27,44 @@ Feature: Client Authentication - Registration & Login
     When the customer logs in with an incorrect password
     Then an authentication error "Incorrect email or password." should be displayed
     And the customer should remain on the login page
+
+  # VJS-TC-AUTH-002  (Jira VJS-3)
+  # Submits the configured QA email (already registered) → rejected, no account created.
+  # NOTE: the pack/Jira expects "Email already in use", but the live app renders
+  # "An account with that email already exists." — asserting the real text (same
+  # wording-mismatch pattern as AUTH-005/VJS-6); reconcile the Jira issue later.
+  @Negative @VJS-3
+  Scenario: Registration fails when the email is already registered
+    Given the client signup page is open
+    When the customer registers with the already-registered client email
+    Then registration should be rejected with the error "An account with that email already exists."
+    And the customer should remain on the signup page
+
+  # VJS-TC-AUTH-001  (Jira VJS-2)
+  # Registers a brand-new customer with a fresh Gmail plus-addressed email (unique per
+  # run) so it is genuinely new; success = landing on the client dashboard.
+  # NOTE: creates a real Firebase account each run (accepted trade-off — see docs/TRIAGE.md).
+  @Positive @VJS-2
+  Scenario: New customer registers successfully
+    Given the client signup page is open
+    When the customer registers as a new user
+    Then the customer should land on the client dashboard
+
+  # VJS-TC-AUTH-003  (Jira VJS-4)
+  # The signup form uses HTML5 email validation; these malformed emails fail it, so the
+  # form cannot submit — verified client-side with no account created.
+  # Pack deviations (flag for Jira): the pack's "user@domain" row is actually VALID per
+  # HTML5 (no TLD required), so it is not rejected client-side and is excluded here
+  # (testing its live Firebase outcome would risk creating a real account). The valid
+  # "accepted" case is covered by AUTH-001.
+  @Negative @Boundary @VJS-4
+  Scenario Outline: Registration rejects malformed email formats client-side
+    Given the client signup page is open
+    When the customer enters the email "<email>"
+    Then the email should be rejected as invalid by the form
+
+    Examples:
+      | email             |
+      | plainaddress      |
+      | @missinglocal.com |
+      | user@             |
