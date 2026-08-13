@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<!--
+    TestNG suite. Surefire runs this file (see pom.xml). For the pilot it drives the
+    single Cucumber runner; parallel thread-count / data-provider-thread-count and
+    additional tag-grouped tests are added as more modules are ported.
+-->
+<suite name="vkai-insurance-automation-suite" verbose="1">
+    <test name="pilot">
+        <classes>
+            <class name="com.vkailabs.insurance.automation.runners.RegressionRunner"/>
+        </classes>
+    </test>
+</suite>

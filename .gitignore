@@ -1,0 +1,29 @@
+# Maven
+target/
+
+# ExtentReports output (published as CI artifact, not committed).
+# Ignore the contents but keep the dir via .gitkeep (use reports/* so the negation
+# below can re-include the placeholder — an ignored dir can't have files re-included).
+reports/*
+!reports/.gitkeep
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+
+# Local secrets / overrides (real creds never committed)
+*.local.properties
+.env
+
+# Real QA credentials for local runs — commit only the .example template
+src/test/resources/config/config-local.properties

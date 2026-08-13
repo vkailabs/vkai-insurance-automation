@@ -1,0 +1,28 @@
+# ---------------------------------------------------------------------------
+# config-local.properties  (TEMPLATE)
+#
+# Copy this file to  config-local.properties  (same folder) and fill in real
+# QA values. That real file is GITIGNORED and must never be committed.
+#
+# Resolution order at runtime: environment variables are checked FIRST, then
+# this file. In CI these are injected as GitHub Actions secrets, so the file is
+# only needed for local runs. Keys are identical in both places.
+#
+# Do NOT put real URLs/emails/passwords in THIS .example file — placeholders only.
+# ---------------------------------------------------------------------------
+
+# ---- Client portal (GCP / Firebase Auth) ----------------------------------
+VKAI_CLIENT_BASE_URL=https://your-client-portal.example.app
+VKAI_CLIENT_EMAIL=client-qa-account@example.com
+VKAI_CLIENT_PASSWORD=REPLACE_WITH_REAL_PASSWORD
+
+# ---- Provider portal (Azure / Entra ID, Approver role) --------------------
+VKAI_PROVIDER_BASE_URL=https://your-provider-portal.example.app
+VKAI_PROVIDER_EMAIL=provider-approver-qa@example.com
+VKAI_PROVIDER_PASSWORD=REPLACE_WITH_REAL_PASSWORD
+
+# ---- Optional driver tuning (defaults shown; safe to omit) ----------------
+# VKAI_AUTOMATION_BROWSER=chrome
+# VKAI_AUTOMATION_HEADLESS=true
+# VKAI_AUTOMATION_IMPLICIT_WAIT_SECS=0
+# VKAI_AUTOMATION_EXPLICIT_WAIT_SECS=15
