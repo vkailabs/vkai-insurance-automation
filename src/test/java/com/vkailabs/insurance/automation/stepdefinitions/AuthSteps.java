@@ -78,6 +78,23 @@ public class AuthSteps {
         context.signupPage().registerWithExistingClientEmail();
     }
 
+    @When("the customer registers as a new user")
+    public void the_customer_registers_as_a_new_user() {
+        context.signupPage().registerAsNewUser();
+    }
+
+    @When("the customer enters the email {string}")
+    public void the_customer_enters_the_email(String email) {
+        context.signupPage().enterEmail(email);
+    }
+
+    @Then("the email should be rejected as invalid by the form")
+    public void the_email_should_be_rejected_as_invalid_by_the_form() {
+        assertThat(context.signupPage().isEmailFormatValid())
+                .as("email should fail the form's native format validation")
+                .isFalse();
+    }
+
     @Then("registration should be rejected with the error {string}")
     public void registration_should_be_rejected_with_the_error(String expectedMessage) {
         assertThat(context.signupPage().waitForErrorMessage())

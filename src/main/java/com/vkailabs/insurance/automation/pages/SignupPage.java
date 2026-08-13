@@ -1,11 +1,14 @@
 package com.vkailabs.insurance.automation.pages;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vkailabs.insurance.automation.utils.ConfigReader;
+import com.vkailabs.insurance.automation.utils.TestData;
 
 /**
  * Page Object for the client signup screen ("Create your account", Firebase).
@@ -62,6 +65,32 @@ public class SignupPage extends BasePage {
      */
     public void registerWithExistingClientEmail() {
         register("QA Duplicate Check", ConfigReader.clientEmail(), VALID_PASSWORD);
+    }
+
+    /**
+     * Registers a brand-new customer with a fresh plus-addressed email (creates a real
+     * Firebase account each run — accepted trade-off, see docs/TRIAGE.md).
+     */
+    public void registerAsNewUser() {
+        register("QA New User", TestData.uniqueClientEmail(), VALID_PASSWORD);
+    }
+
+    /**
+     * Types an email into the form without submitting — used for format-validation checks.
+     * Deliberately bypasses {@link #register} (and its account-safety guard): a malformed
+     * email can't create an account, and we only want to inspect the field's validity.
+     */
+    public void enterEmail(String email) {
+        WebElement field = wait.waitForVisible(emailInput);
+        field.clear();
+        field.sendKeys(email);
+    }
+
+    /** True if the email field passes the browser's native (HTML5) format validation. */
+    public boolean isEmailFormatValid() {
+        WebElement field = driver.findElement(emailInput);
+        return Boolean.TRUE.equals(((JavascriptExecutor) driver)
+                .executeScript("return arguments[0].checkValidity();", field));
     }
 
     /** True if the browser is still on the signup route (i.e. registration did not proceed). */

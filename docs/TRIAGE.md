@@ -13,6 +13,11 @@ so batches can be planned. Keep in sync as scenarios go green or constraints cha
   Defaults + no MFA method on the QA account block automation).
 - **Backend-only** — sync-internals scenarios have no meaningful UI surface → manual.
 
+## Accepted trade-offs (option A — no cleanup)
+- Enrollment scenarios leave real **pending policies** on the live dev DB each run.
+- **AUTH-001 creates a real Firebase account each run** (a fresh Gmail plus-addressed
+  variant of the QA client account). No teardown; the QA-adjacent addresses absorb the churn.
+
 ## Green (5)
 `VJS-5` AUTH-004 · `VJS-6` AUTH-005 · `VJS-13` ENR-001 · `VJS-19` PREM-002 ·
 `VJS-40` E2E-001 (automatable slice).
@@ -65,7 +70,8 @@ so batches can be planned. Keep in sync as scenarios go green or constraints cha
 **Batch log**
 - Batch 1: CAT-001, CLM-003 — done, merged to main.
 - Batch 2: AUTH-002 — done (on dev).
+- Batch 3: plus-addressing helper + AUTH-001 + AUTH-003 — done (on dev).
 
-Category ① is now fully automated (CAT-001, CLM-003, AUTH-002). Remaining work needs a
-decision to land first: ② the fixture seam (9 scenarios), or ③ plus-addressing for
-registration success/format (AUTH-001/003).
+Categories ① and ③ are now fully automated. AUTH-003 excludes the pack's `user@domain`
+row (HTML5-valid, so not client-side-rejected — flagged for Jira). The only remaining
+automatable work is ② the fixture seam (9 scenarios), pending the provider-api endpoints.
