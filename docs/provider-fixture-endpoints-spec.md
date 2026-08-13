@@ -1,7 +1,12 @@
 # Provider-API Test-Fixture Endpoints — Spec
 
-**Status:** proposed — to be implemented in a separate `vkai-insurance-provider-api` session.
-**Consumer:** the `vkai-insurance-automation` suite (category ② scenarios — see [TRIAGE.md](TRIAGE.md)).
+> **OBSOLETE / CLOSED (2026-08-14).** The regression pack scope was locked at the 10
+> automated scenarios and the other 30 were deleted from Jira. This fixture seam is
+> **not being built** — the document is kept only as a historical record of what was
+> designed. See [TRIAGE.md](TRIAGE.md).
+
+**Status:** ~~proposed~~ **not pursued** (see notice above).
+**Consumer:** was the `vkai-insurance-automation` suite (the now-removed active-policy scenarios).
 
 ## Purpose & scope
 Let the automation suite set up **policy preconditions** the client UI can't produce on its own
