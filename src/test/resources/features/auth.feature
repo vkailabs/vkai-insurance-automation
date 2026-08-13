@@ -27,3 +27,15 @@ Feature: Client Authentication - Registration & Login
     When the customer logs in with an incorrect password
     Then an authentication error "Incorrect email or password." should be displayed
     And the customer should remain on the login page
+
+  # VJS-TC-AUTH-002  (Jira VJS-3)
+  # Submits the configured QA email (already registered) → rejected, no account created.
+  # NOTE: the pack/Jira expects "Email already in use", but the live app renders
+  # "An account with that email already exists." — asserting the real text (same
+  # wording-mismatch pattern as AUTH-005/VJS-6); reconcile the Jira issue later.
+  @Negative @VJS-3
+  Scenario: Registration fails when the email is already registered
+    Given the client signup page is open
+    When the customer registers with the already-registered client email
+    Then registration should be rejected with the error "An account with that email already exists."
+    And the customer should remain on the signup page

@@ -8,6 +8,7 @@ import org.openqa.selenium.WebDriver;
 import com.vkailabs.insurance.automation.pages.CatalogPage;
 import com.vkailabs.insurance.automation.pages.ClientLoginPage;
 import com.vkailabs.insurance.automation.pages.DashboardPage;
+import com.vkailabs.insurance.automation.pages.SignupPage;
 import com.vkailabs.insurance.automation.utils.DriverFactory;
 
 /**
@@ -27,6 +28,7 @@ public class TestContext {
     private ClientLoginPage clientLoginPage;
     private DashboardPage dashboardPage;
     private CatalogPage catalogPage;
+    private SignupPage signupPage;
 
     /** Free-form scratch data shared between steps within a scenario. */
     private final Map<String, Object> scenarioData = new HashMap<>();
@@ -64,6 +66,13 @@ public class TestContext {
         return catalogPage;
     }
 
+    public SignupPage signupPage() {
+        if (signupPage == null) {
+            signupPage = new SignupPage(getDriver());
+        }
+        return signupPage;
+    }
+
     public void put(String key, Object value) {
         scenarioData.put(key, value);
     }
@@ -81,6 +90,7 @@ public class TestContext {
         clientLoginPage = null;
         dashboardPage = null;
         catalogPage = null;
+        signupPage = null;
         scenarioData.clear();
     }
 }

@@ -63,4 +63,9 @@ so batches can be planned. Keep in sync as scenarios go green or constraints cha
 2–3 scenarios per batch, DOM-verified from live captures, stop for `mvn test` before continuing.
 
 **Batch log**
-- Batch 1 (in progress): CAT-001, CLM-003.
+- Batch 1: CAT-001, CLM-003 — done, merged to main.
+- Batch 2: AUTH-002 — done (on dev).
+
+Category ① is now fully automated (CAT-001, CLM-003, AUTH-002). Remaining work needs a
+decision to land first: ② the fixture seam (9 scenarios), or ③ plus-addressing for
+registration success/format (AUTH-001/003).

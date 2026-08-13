@@ -67,4 +67,28 @@ public class AuthSteps {
                 .as("expected to stay on /login after a failed login")
                 .isTrue();
     }
+
+    @Given("the client signup page is open")
+    public void the_client_signup_page_is_open() {
+        context.signupPage().open();
+    }
+
+    @When("the customer registers with the already-registered client email")
+    public void the_customer_registers_with_the_already_registered_client_email() {
+        context.signupPage().registerWithExistingClientEmail();
+    }
+
+    @Then("registration should be rejected with the error {string}")
+    public void registration_should_be_rejected_with_the_error(String expectedMessage) {
+        assertThat(context.signupPage().waitForErrorMessage())
+                .as("inline signup error text")
+                .isEqualTo(expectedMessage);
+    }
+
+    @Then("the customer should remain on the signup page")
+    public void the_customer_should_remain_on_the_signup_page() {
+        assertThat(context.signupPage().isOnSignupPage())
+                .as("expected to stay on /signup after a rejected registration")
+                .isTrue();
+    }
 }
