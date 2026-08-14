@@ -10,11 +10,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Page Object for the client dashboard (the post-login landing + "Your policies").
+ * Page Object for the client dashboard (the post-login landing + policy sections).
  *
  * <p>The client portal is a React SPA with no {@code data-testid} hooks, so locators
- * key off durable visible text. The "Your policies" heading is the dashboard-specific
- * marker; "Logout" confirms an authenticated session.
+ * key off durable visible text / class structure. The {@code div.policy-summary} block is
+ * the dashboard-specific content marker; "Logout" confirms an authenticated session.
+ *
+ * <p>Since VKAI-006 the single "Your policies" list was split into two
+ * {@code <section class="policy-section">} blocks, each headed by an
+ * {@code <h2 class="section-title">} ("Your Active Policies" then "Your Pending Policies"
+ * in DOM order). A populated section holds a {@code <div class="card-grid">} of policy
+ * cards; an empty one shows a {@code <p class="policy-section-empty">}. The old single
+ * "Your policies" heading no longer renders, so the dashboard-loaded marker is the
+ * always-present policy-summary block, not that heading.
  *
  * <p>A policy renders as {@code <article class="policy-card">} with an
  * {@code <h3 class="policy-card-title">} and a {@code <span class="status-pill status-*">}
@@ -28,12 +36,10 @@ public class DashboardPage extends BasePage {
 
     private static final String LOGIN_PATH = "/login";
 
-    private final By policiesHeading = By.xpath(
-            "//*[self::h1 or self::h2 or self::h3][normalize-space()='Your policies']");
     // Policy summary block (VKAI-005): <div class="policy-summary"> holding one
     // <div class="summary-box"> per status, each with a <span class="summary-count">
-    // and a <span class="summary-label"> ("Active" / "Pending"). Sits directly above
-    // the "Your policies" header.
+    // and a <span class="summary-label"> ("Active" / "Pending"). Always present once the
+    // dashboard data has loaded, so it doubles as the dashboard-loaded content marker.
     private final By policySummary = By.cssSelector("div.policy-summary");
     private final By logoutControl = By.xpath(
             "//*[self::button or self::a][normalize-space()='Logout']");
@@ -47,7 +53,7 @@ public class DashboardPage extends BasePage {
     /** Navigates to the dashboard via the nav bar and waits for it to load. */
     public DashboardPage open() {
         wait.waitForClickable(dashboardNav).click();
-        wait.waitForVisible(policiesHeading);
+        wait.waitForVisible(policySummary);
         return this;
     }
 
@@ -59,7 +65,7 @@ public class DashboardPage extends BasePage {
         try {
             wait.waitForUrlToNotContain(LOGIN_PATH);   // navigated away from login
             wait.waitForVisible(logoutControl);        // authenticated session
-            wait.waitForVisible(policiesHeading);      // dashboard-specific content
+            wait.waitForVisible(policySummary);        // dashboard-specific content
             log.info("Dashboard confirmed loaded at {}", driver.getCurrentUrl());
             return true;
         } catch (TimeoutException e) {
@@ -150,6 +156,74 @@ public class DashboardPage extends BasePage {
                 + "[.//span[contains(concat(' ', normalize-space(@class), ' '), ' %s ')]]",
                 statusClass));
         return driver.findElements(cards).size();
+    }
+
+    // ---- Policy sections (VKAI-006): Active vs Pending split ----------------------
+
+    /** True if a policy section headed by the exact {@code title} is displayed. */
+    public boolean isPolicySectionDisplayed(String title) {
+        try {
+            wait.waitForVisible(sectionTitleHeading(title));
+            return true;
+        } catch (TimeoutException e) {
+            log.warn("No policy section headed '{}' found: {}", title, e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * True if the section headed {@code firstTitle} precedes the one headed
+     * {@code secondTitle} in document order. Uses the XPath {@code following::} axis so the
+     * check is about real DOM position, not pixel geometry.
+     */
+    public boolean isSectionAboveSection(String firstTitle, String secondTitle) {
+        By locator = By.xpath(String.format(
+                "//h2[contains(concat(' ', normalize-space(@class), ' '), ' section-title ')]"
+                + "[normalize-space()='%s']"
+                + "/following::h2[contains(concat(' ', normalize-space(@class), ' '), ' section-title ')]"
+                + "[normalize-space()='%s']",
+                firstTitle, secondTitle));
+        return !driver.findElements(locator).isEmpty();
+    }
+
+    /** Total number of policy cards rendered inside the section headed {@code title}. */
+    public int cardCountInSection(String title) {
+        By cards = By.xpath(sectionXpath(title)
+                + "//article[contains(concat(' ', normalize-space(@class), ' '), ' policy-card ')]");
+        return driver.findElements(cards).size();
+    }
+
+    /**
+     * Number of policy cards with the given {@code status} pill inside the section headed
+     * {@code title}. Matches on the {@code status-<status>} class, not the pill's (lowercase)
+     * text, consistent with the rest of this page object.
+     */
+    public int cardCountInSectionByStatus(String title, String status) {
+        String statusClass = "status-" + status.toLowerCase().replace(" ", "-");
+        By cards = By.xpath(sectionXpath(title)
+                + "//article[contains(concat(' ', normalize-space(@class), ' '), ' policy-card ')]"
+                + "[.//span[contains(concat(' ', normalize-space(@class), ' '), ' " + statusClass + " ')]]");
+        return driver.findElements(cards).size();
+    }
+
+    /** The {@code <h2 class="section-title">} heading whose text matches {@code title} exactly. */
+    private By sectionTitleHeading(String title) {
+        return By.xpath(String.format(
+                "//h2[contains(concat(' ', normalize-space(@class), ' '), ' section-title ')]"
+                + "[normalize-space()='%s']",
+                title));
+    }
+
+    /**
+     * The {@code <section class="policy-section">} that contains the {@code section-title}
+     * heading with the exact {@code title} text.
+     */
+    private String sectionXpath(String title) {
+        return String.format(
+                "//section[contains(concat(' ', normalize-space(@class), ' '), ' policy-section ')]"
+                + "[.//h2[contains(concat(' ', normalize-space(@class), ' '), ' section-title ')]"
+                + "[normalize-space()='%s']]",
+                title);
     }
 
     /**
