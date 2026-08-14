@@ -21,6 +21,11 @@ VKAI_PROVIDER_BASE_URL=https://your-provider-portal.example.app
 VKAI_PROVIDER_EMAIL=provider-approver-qa@example.com
 VKAI_PROVIDER_PASSWORD=REPLACE_WITH_REAL_PASSWORD
 
+# ---- Jira (Atlassian Cloud REST API) --------------------------------------
+# Used by the agent-vkai-jira-update subagent (env-first, then this file).
+VKAI_JIRA_EMAIL=your-atlassian-account@example.com
+VKAI_JIRA_API_TOKEN=REPLACE_WITH_REAL_JIRA_API_TOKEN
+
 # ---- Optional driver tuning (defaults shown; safe to omit) ----------------
 # VKAI_AUTOMATION_BROWSER=chrome
 # VKAI_AUTOMATION_HEADLESS=true
