@@ -23,6 +23,7 @@ VKAI_PROVIDER_PASSWORD=REPLACE_WITH_REAL_PASSWORD
 
 # ---- Jira (Atlassian Cloud REST API) --------------------------------------
 # Used by the agent-vkai-jira-update subagent (env-first, then this file).
+VKAI_JIRA_BASE_URL=https://vkailabs.atlassian.net  # public site URL, safe to commit
 VKAI_JIRA_EMAIL=your-atlassian-account@example.com
 VKAI_JIRA_API_TOKEN=REPLACE_WITH_REAL_JIRA_API_TOKEN
 
