@@ -54,7 +54,7 @@ reopening the §8 deleted-30 decision. Additions:
   Pending=54; activation is provider/Entra-side per §5, client UI can't delete policies).
   This is a data-state limitation, **not** a member of the deleted 30, and not a reopening
   of §8. Live automated count after VKAI-005: 12 scenarios / 14 execution rows.
-- **VKAI-006 (2026-08-14):** `DASH-003` (VJS key `(VKAI-006 - new)` pending) — below the
+- **VKAI-006 (2026-08-14):** `DASH-003` (Jira `VJS-45`) — below the
   still-present `<h1 class="page-title">Your policies</h1>` heading, the cards are now grouped
   into two sections, **"Your Active Policies"** (all non-pending) then **"Your Pending
   Policies"** (pending), each a `<section class="policy-section">` headed by an
