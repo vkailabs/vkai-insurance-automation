@@ -13,10 +13,11 @@ import io.cucumber.java.en.Then;
  * (VKAI-006 / VJS-TC-DASH-003).
  *
  * <p>The count boxes are derived client-side from the loaded policies and render above the
- * policy list (now the "Your Active Policies" section, since VKAI-006 split the single
- * "Your policies" list into two sections). These steps assert the boxes are present,
- * positioned above the list, numeric, and consistent with the rendered cards, and that the
- * two sections render in the right order with the right cards bucketed into each.
+ * "Your policies" heading. Since VKAI-006 the cards below that heading are grouped into two
+ * "Your Active Policies" / "Your Pending Policies" sections (the heading itself is
+ * unchanged). These steps assert the boxes are present, positioned above the heading,
+ * numeric, and consistent with the rendered cards, and that the two sections render in the
+ * right order with the right cards bucketed into each.
  * State is shared via the PicoContainer-injected {@link TestContext}.
  */
 public class DashboardSteps {

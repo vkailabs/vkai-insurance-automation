@@ -16,13 +16,14 @@ import org.slf4j.LoggerFactory;
  * key off durable visible text / class structure. The {@code div.policy-summary} block is
  * the dashboard-specific content marker; "Logout" confirms an authenticated session.
  *
- * <p>Since VKAI-006 the single "Your policies" list was split into two
+ * <p>Since VKAI-006 the policy list is grouped into two
  * {@code <section class="policy-section">} blocks, each headed by an
  * {@code <h2 class="section-title">} ("Your Active Policies" then "Your Pending Policies"
- * in DOM order). A populated section holds a {@code <div class="card-grid">} of policy
- * cards; an empty one shows a {@code <p class="policy-section-empty">}. The old single
- * "Your policies" heading no longer renders, so the dashboard-loaded marker is the
- * always-present policy-summary block, not that heading.
+ * in DOM order), rendered <em>below</em> the still-present {@code <h1 class="page-title">Your
+ * policies</h1>}. A populated section holds a {@code <div class="card-grid">} of policy
+ * cards; an empty one shows a {@code <p class="policy-section-empty">}. The dashboard-loaded
+ * marker keys off the always-present, unambiguous policy-summary block rather than any
+ * heading.
  *
  * <p>A policy renders as {@code <article class="policy-card">} with an
  * {@code <h3 class="policy-card-title">} and a {@code <span class="status-pill status-*">}
