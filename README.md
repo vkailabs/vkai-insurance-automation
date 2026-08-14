@@ -82,6 +82,7 @@ Optional Jira keys (only used by the `agent-vkai-jira-update` subagent, not the 
 
 | Key | Meaning |
 |---|---|
+| `VKAI_JIRA_BASE_URL` | Atlassian Cloud site base URL (e.g. `https://vkailabs.atlassian.net`) |
 | `VKAI_JIRA_EMAIL` / `VKAI_JIRA_API_TOKEN` | Atlassian Cloud account email + API token for Jira REST auth |
 
 Optional tuning (defaults shown): `VKAI_AUTOMATION_BROWSER=chrome`,
