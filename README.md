@@ -78,6 +78,12 @@ Required keys:
 | `VKAI_PROVIDER_BASE_URL` | Provider portal base URL |
 | `VKAI_PROVIDER_EMAIL` / `VKAI_PROVIDER_PASSWORD` | Provider QA account (Entra ID, Approver) |
 
+Optional Jira keys (only used by the `agent-vkai-jira-update` subagent, not the test suite):
+
+| Key | Meaning |
+|---|---|
+| `VKAI_JIRA_EMAIL` / `VKAI_JIRA_API_TOKEN` | Atlassian Cloud account email + API token for Jira REST auth |
+
 Optional tuning (defaults shown): `VKAI_AUTOMATION_BROWSER=chrome`,
 `VKAI_AUTOMATION_HEADLESS=true`, `VKAI_AUTOMATION_IMPLICIT_WAIT_SECS=0`,
 `VKAI_AUTOMATION_EXPLICIT_WAIT_SECS=15`.
