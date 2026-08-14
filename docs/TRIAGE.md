@@ -37,4 +37,20 @@ not worth automating here:
 - **Provider Approver/Reviewer actions** — blocked by Entra ID + tenant MFA; stay manual.
 - **Backend-only sync internals** — no meaningful UI surface.
 
-No further automation is planned. This document records the final scope, not pending work.
+No further automation of **the deleted 30** is planned. This document records the final
+triage of the original 40, not pending work — that decision stays closed.
+
+## Extension log — genuinely-new client UI (per automation reference §9)
+
+The scope-lock above concerns the **original 40** (10 kept, 30 deleted). It does **not**
+freeze the suite against brand-new client-side UI that ships in later stories. Per §9 of
+the automation reference, genuinely-new UI-only client scenarios may be added without
+reopening the §8 deleted-30 decision. Additions:
+
+- **VKAI-005 (2026-08-14):** `AUTH-006` (login heading "Client Portal", centered, "Welcome
+  back" removed) and `DASH-001` (dashboard Active/Pending summary counts) — both built from
+  live DOM captures and green live. `DASH-002` (zero-count boundary) authored but **held
+  `@Manual`**: no reproducible zero-status state exists UI-only on the QA account (Active=5,
+  Pending=54; activation is provider/Entra-side per §5, client UI can't delete policies).
+  This is a data-state limitation, **not** a member of the deleted 30, and not a reopening
+  of §8. Live automated count after VKAI-005: 12 scenarios / 14 execution rows.

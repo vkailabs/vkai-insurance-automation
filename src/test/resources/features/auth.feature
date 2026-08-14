@@ -50,6 +50,18 @@ Feature: Client Authentication - Registration & Login
     When the customer registers as a new user
     Then the customer should land on the client dashboard
 
+  # VJS-TC-AUTH-006  (VKAI-005 — new)
+  # Login card heading changed: now reads "Client Portal" (was "Welcome back" copy),
+  # rendered horizontally centered. Live DOM: <h1 class="auth-title auth-title-centered">
+  # with computed text-align:center. Asserts the new text, that it is centered, and that
+  # the old "Welcome back" copy is fully gone.
+  @Positive @VJS-TC-AUTH-006
+  Scenario: Login page shows the centered "Client Portal" heading without "Welcome back"
+    Given the client login page is open
+    Then the login heading should read "Client Portal"
+    And the login heading should be horizontally centered
+    And the text "Welcome back" should not be present on the login page
+
   # VJS-TC-AUTH-003  (Jira VJS-4)
   # The signup form uses HTML5 email validation; these malformed emails fail it, so the
   # form cannot submit — verified client-side with no account created.
