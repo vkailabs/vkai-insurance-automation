@@ -108,4 +108,27 @@ public class AuthSteps {
                 .as("expected to stay on /signup after a rejected registration")
                 .isTrue();
     }
+
+    // --- Login page presentation (VKAI-005 / VJS-TC-AUTH-006) ---
+
+    @Then("the login heading should read {string}")
+    public void the_login_heading_should_read(String expected) {
+        assertThat(context.clientLoginPage().loginHeadingText())
+                .as("login card heading text")
+                .isEqualTo(expected);
+    }
+
+    @Then("the login heading should be horizontally centered")
+    public void the_login_heading_should_be_horizontally_centered() {
+        assertThat(context.clientLoginPage().isLoginHeadingCentered())
+                .as("login heading should render horizontally centered (computed text-align)")
+                .isTrue();
+    }
+
+    @Then("the text {string} should not be present on the login page")
+    public void the_text_should_not_be_present_on_the_login_page(String text) {
+        assertThat(context.clientLoginPage().isTextPresent(text))
+                .as("text '%s' should be absent from the login page", text)
+                .isFalse();
+    }
 }

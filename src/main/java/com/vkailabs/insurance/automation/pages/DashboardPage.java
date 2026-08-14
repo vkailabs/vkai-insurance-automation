@@ -30,6 +30,11 @@ public class DashboardPage extends BasePage {
 
     private final By policiesHeading = By.xpath(
             "//*[self::h1 or self::h2 or self::h3][normalize-space()='Your policies']");
+    // Policy summary block (VKAI-005): <div class="policy-summary"> holding one
+    // <div class="summary-box"> per status, each with a <span class="summary-count">
+    // and a <span class="summary-label"> ("Active" / "Pending"). Sits directly above
+    // the "Your policies" header.
+    private final By policySummary = By.cssSelector("div.policy-summary");
     private final By logoutControl = By.xpath(
             "//*[self::button or self::a][normalize-space()='Logout']");
     private final By dashboardNav = By.xpath(
@@ -90,6 +95,74 @@ public class DashboardPage extends BasePage {
                 + " 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '"
                 + needle + "')]"));
         return !controls.isEmpty();
+    }
+
+    /** True if the policy-summary block is present on the dashboard. */
+    public boolean isPolicySummaryDisplayed() {
+        try {
+            wait.waitForVisible(policySummary);
+            return true;
+        } catch (TimeoutException e) {
+            return false;
+        }
+    }
+
+    /** True if a summary box for the given status label (e.g. "Active") is displayed. */
+    public boolean isSummaryDisplayed(String label) {
+        try {
+            wait.waitForVisible(summaryBox(label));
+            return true;
+        } catch (TimeoutException e) {
+            log.warn("No summary box found for label '{}'", label);
+            return false;
+        }
+    }
+
+    /**
+     * True if the summary box for {@code label} precedes the given heading in document
+     * order (i.e. renders above it). Uses the XPath {@code following::} axis so the check
+     * is about real DOM position, not pixel geometry.
+     */
+    public boolean isSummaryAboveHeading(String label, String heading) {
+        By locator = By.xpath(String.format(
+                "//div[contains(concat(' ', normalize-space(@class), ' '), ' summary-box ')]"
+                + "[.//span[contains(concat(' ', normalize-space(@class), ' '), ' summary-label ')]"
+                + "[normalize-space()='%s']]"
+                + "/following::*[self::h1 or self::h2 or self::h3][normalize-space()='%s']",
+                label, heading));
+        return !driver.findElements(locator).isEmpty();
+    }
+
+    /** The numeric count shown in the summary box for {@code label}. */
+    public int summaryCount(String label) {
+        WebElement box = wait.waitForVisible(summaryBox(label));
+        String text = box.findElement(By.xpath(
+                ".//span[contains(concat(' ', normalize-space(@class), ' '), ' summary-count ')]"))
+                .getText().trim();
+        return Integer.parseInt(text);
+    }
+
+    /** The number of policy cards currently rendered with the given status. */
+    public int policyCardCountByStatus(String status) {
+        String statusClass = "status-" + status.toLowerCase().replace(" ", "-");
+        By cards = By.xpath(String.format(
+                "//article[contains(concat(' ', normalize-space(@class), ' '), ' policy-card ')]"
+                + "[.//span[contains(concat(' ', normalize-space(@class), ' '), ' %s ')]]",
+                statusClass));
+        return driver.findElements(cards).size();
+    }
+
+    /**
+     * A summary box ({@code <div class="summary-box">}) whose label span text matches
+     * {@code label} exactly (e.g. "Active", "Pending").
+     */
+    private By summaryBox(String label) {
+        return By.xpath(String.format(
+                "//div[contains(concat(' ', normalize-space(@class), ' '), ' policy-summary ')]"
+                + "//div[contains(concat(' ', normalize-space(@class), ' '), ' summary-box ')]"
+                + "[.//span[contains(concat(' ', normalize-space(@class), ' '), ' summary-label ')]"
+                + "[normalize-space()='%s']]",
+                label));
     }
 
     /**

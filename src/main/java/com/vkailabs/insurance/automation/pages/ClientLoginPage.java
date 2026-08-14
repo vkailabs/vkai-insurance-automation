@@ -1,8 +1,10 @@
 package com.vkailabs.insurance.automation.pages;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +31,8 @@ public class ClientLoginPage extends BasePage {
     private final By signInButton = By.cssSelector("button[type='submit']");
     // Firebase auth error, rendered inline on failed login (role="alert").
     private final By errorMessage = By.cssSelector(".error-message");
+    // Login card heading. Live DOM (VKAI-005): <h1 class="auth-title auth-title-centered">Client Portal</h1>.
+    private final By loginHeading = By.cssSelector("h1.auth-title");
 
     public ClientLoginPage(WebDriver driver) {
         super(driver);
@@ -92,5 +96,30 @@ public class ClientLoginPage extends BasePage {
     /** True if the browser is still on the login route (i.e. login did not proceed). */
     public boolean isOnLoginPage() {
         return driver.getCurrentUrl().contains(LOGIN_PATH);
+    }
+
+    /** The trimmed text of the login card heading (VKAI-005: "Client Portal"). */
+    public String loginHeadingText() {
+        return wait.waitForVisible(loginHeading).getText().trim();
+    }
+
+    /**
+     * True if the login heading is horizontally centered. Asserts the browser's
+     * <em>computed</em> {@code text-align} is "center" rather than trusting a class name,
+     * so the check reflects what actually renders (the live DOM applies
+     * {@code auth-title-centered}, which computes to {@code text-align: center}).
+     */
+    public boolean isLoginHeadingCentered() {
+        WebElement heading = wait.waitForVisible(loginHeading);
+        Object textAlign = ((JavascriptExecutor) driver).executeScript(
+                "return window.getComputedStyle(arguments[0]).textAlign;", heading);
+        log.info("Login heading computed text-align: {}", textAlign);
+        return textAlign != null && "center".equalsIgnoreCase(textAlign.toString().trim());
+    }
+
+    /** True if {@code text} appears anywhere in the visible body text of the login page. */
+    public boolean isTextPresent(String text) {
+        wait.waitForVisible(loginHeading); // ensure the auth card has rendered
+        return driver.findElement(By.tagName("body")).getText().contains(text);
     }
 }
