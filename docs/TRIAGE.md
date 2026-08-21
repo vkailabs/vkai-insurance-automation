@@ -71,9 +71,9 @@ reopening the §8 deleted-30 decision. Additions:
   `window.confirm` → on accept the policy is cancelled and **hidden** from the client
   dashboard). Added `CANCEL-001` (Cancel visible on a Pending card), `CANCEL-002` (no Cancel
   on an Active card), and `CANCEL-003` (confirm gate; **dismiss** is a safe no-op, Pending
-  count unchanged) — all three automated, non-destructive, and dry-run green (live run pending
-  human confirmation of the `dev → main` merges). Placeholder key `(VKAI-010 - new)` until the
-  Jira Test Cases are created. `CANCEL-004` (the **destructive accept path** — accept confirm →
+  count unchanged) — all three automated, non-destructive, re-grounded against the live
+  production DOM, and **live-green on 2026-08-21** (18 execution rows / 0 failures / no
+  regressions) as `VJS-50` / `VJS-51` / `VJS-52` respectively. `CANCEL-004` (the **destructive accept path** — accept confirm →
   policy actually cancelled) is authored but **held `@Manual`**, deliberately **no Jira issue**,
   for two independent reasons: (1) accepting fires a terminal, irreversible cancel against the
   live production QA account, unsafe to run repeatedly/unattended; (2) cancelled policies are
