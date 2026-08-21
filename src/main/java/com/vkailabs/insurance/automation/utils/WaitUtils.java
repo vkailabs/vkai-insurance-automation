@@ -2,6 +2,7 @@ package com.vkailabs.insurance.automation.utils;
 
 import java.time.Duration;
 
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -46,5 +47,15 @@ public class WaitUtils {
     /** Waits until no element matching {@code locator} is visible (e.g. the login form is gone). */
     public boolean waitForInvisible(By locator) {
         return wait.until(ExpectedConditions.invisibilityOfElementLocated(locator));
+    }
+
+    /**
+     * Waits until a JavaScript alert / confirm / prompt dialog is present and switches to
+     * it. Used for the native {@code window.confirm} the client portal opens when cancelling
+     * a pending policy — the caller then reads its text and either dismisses (safe no-op) or
+     * accepts it.
+     */
+    public Alert waitForAlert() {
+        return wait.until(ExpectedConditions.alertIsPresent());
     }
 }

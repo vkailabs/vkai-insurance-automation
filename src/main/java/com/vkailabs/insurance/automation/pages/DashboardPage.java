@@ -207,6 +207,52 @@ public class DashboardPage extends BasePage {
         return driver.findElements(cards).size();
     }
 
+    // ---- Pending-policy cancellation (VKAI-010) -----------------------------------
+    //
+    // Since VKAI-010, a Pending policy card carries a Cancel control inside its
+    // <div class="policy-card-actions">: <button class="btn btn-danger btn-small
+    // policy-cancel-btn">Cancel</button> (label flips to "Cancelling…", disabled, while the
+    // request is in flight). The control renders ONLY on pending cards, i.e. only inside the
+    // "Your Pending Policies" section — Active/other cards expose no Cancel button. Clicking it
+    // opens a native window.confirm ("Cancel this pending policy? This cannot be undone.");
+    // accepting calls the cancel API and the policy is then HIDDEN from the dashboard entirely
+    // (excluded from both sections and both counts — a deliberate client-side decision), so the
+    // "Cancelled" status pill is never shown here (it surfaces on the provider portal, out of
+    // scope). We locate the button by its stable policy-cancel-btn class, scoped to a section.
+    //
+    // These locators are grounded on the client subagent's reported stable DOM for commit
+    // 7f4b49d (same grounding basis as the VKAI-006 section split), not an independent live
+    // capture — the live run pass re-verifies/adjusts them.
+
+    private static final String PENDING_SECTION_TITLE = "Your Pending Policies";
+
+    /** Number of {@code .policy-cancel-btn} controls rendered inside the section headed {@code title}. */
+    public int cancelButtonCountInSection(String title) {
+        By buttons = By.xpath(sectionXpath(title)
+                + "//button[contains(concat(' ', normalize-space(@class), ' '), ' policy-cancel-btn ')]");
+        return driver.findElements(buttons).size();
+    }
+
+    /**
+     * Clicks the first {@code .policy-cancel-btn} in the "Your Pending Policies" section and
+     * returns the text of the native confirmation dialog it opens, without acting on it — the
+     * caller decides whether to {@link #dismissOpenConfirm()} (safe no-op) or accept. Waiting
+     * for the dialog also proves the button is wired to a confirm gate.
+     */
+    public String clickFirstPendingCancelAndReadConfirm() {
+        By firstCancel = By.xpath(sectionXpath(PENDING_SECTION_TITLE)
+                + "//button[contains(concat(' ', normalize-space(@class), ' '), ' policy-cancel-btn ')]");
+        wait.waitForClickable(firstCancel).click();
+        String text = wait.waitForAlert().getText().trim();
+        log.info("Pending-policy cancel confirmation dialog text: '{}'", text);
+        return text;
+    }
+
+    /** Dismisses the currently-open confirmation dialog — the safe no-op path (no cancellation). */
+    public void dismissOpenConfirm() {
+        driver.switchTo().alert().dismiss();
+    }
+
     /** The {@code <h2 class="section-title">} heading whose text matches {@code title} exactly. */
     private By sectionTitleHeading(String title) {
         return By.xpath(String.format(

@@ -66,3 +66,20 @@ reopening the §8 deleted-30 decision. Additions:
   authored but **held `@Manual`**, no Jira issue — same data-state limitation as DASH-002
   (neither bucket is empty on the QA account), **not** a member of the deleted 30, not a
   reopening of §8. Live automated count after VKAI-006: 13 scenarios / 15 execution rows.
+- **VKAI-010 (2026-08-21):** pending-policy self-cancellation shipped on the client
+  (`<button class="policy-cancel-btn">Cancel</button>` on Pending cards only → native
+  `window.confirm` → on accept the policy is cancelled and **hidden** from the client
+  dashboard). Added `CANCEL-001` (Cancel visible on a Pending card), `CANCEL-002` (no Cancel
+  on an Active card), and `CANCEL-003` (confirm gate; **dismiss** is a safe no-op, Pending
+  count unchanged) — all three automated, non-destructive, and dry-run green (live run pending
+  human confirmation of the `dev → main` merges). Placeholder key `(VKAI-010 - new)` until the
+  Jira Test Cases are created. `CANCEL-004` (the **destructive accept path** — accept confirm →
+  policy actually cancelled) is authored but **held `@Manual`**, deliberately **no Jira issue**,
+  for two independent reasons: (1) accepting fires a terminal, irreversible cancel against the
+  live production QA account, unsafe to run repeatedly/unattended; (2) cancelled policies are
+  hidden from the client dashboard by design, so a client-UI-only test can't assert
+  "status → Cancelled" (only disappearance/count-drop), and the authoritative "Cancelled"
+  display is provider-side. This is a **safety + observability** limitation on genuinely-new
+  client UI, **not** a member of the deleted 30, not a reopening of §8. VJS-49 Scenario 4
+  (provider shows "Cancelled", Approver can't approve) is provider-portal + cross-cloud sync —
+  permanently out of scope (§5). Automated count after VKAI-010: 16 scenarios / 18 execution rows.
