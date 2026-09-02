@@ -6,21 +6,59 @@ Feature: Dashboard Policy Summary
 
   # VJS-TC-DASH-001  (VKAI-005)
   # Dashboard summary block, derived client-side from the loaded policies, renders directly
-  # above the "Your policies" heading. Live DOM: <div class="policy-summary"> with one
-  # <div class="summary-box"> per status, each holding <span class="summary-count"> and
-  # <span class="summary-label"> ("Active" / "Pending"). This scenario verifies both boxes
+  # above the dashboard's <h1 class="page-title"> heading. Live DOM: <div class="policy-summary">
+  # with one <div class="summary-box"> per status, each holding <span class="summary-count">
+  # and <span class="summary-label"> ("Active" / "Pending"). This scenario verifies both boxes
   # render, sit above the heading, are numeric, and match the rendered card counts.
-  # VKAI-006 note: the <h1 class="page-title">Your policies</h1> heading still renders (the
-  # two new .policy-section blocks were added below it), so this assertion keeps its original
-  # "Your policies" target unchanged.
+  # VKAI-011 note: the heading text changed from "Your policies" to "Your Policies (N)" (the
+  # dynamic count suffix), so the positional assertion now targets the heading by
+  # starts-with "Your Policies" (matched against the still-present h1.page-title element),
+  # not an exact-text match. The summary block itself is unchanged.
   @Positive @VJS-TC-DASH-001
   Scenario: Dashboard shows Active and Pending policy count summaries above the policy list
     Given the customer is logged in
-    Then a policy count summary for "Active" should be displayed above the "Your policies" heading
-    And a policy count summary for "Pending" should be displayed above the "Your policies" heading
+    Then a policy count summary for "Active" should be displayed above the "Your Policies" heading
+    And a policy count summary for "Pending" should be displayed above the "Your Policies" heading
     And each policy count summary should show a numeric count
     And the "Active" summary count should equal the number of "Active" policy cards
     And the "Pending" summary count should equal the number of "Pending" policy cards
+
+  # VJS-TC-DASH-005  (VKAI-011 - new)
+  # VKAI-011: the dashboard's <h1 class="page-title"> heading changed from "Your policies" to
+  # "Your Policies (N)", where N = the count of the customer's visible policies (all
+  # non-cancelled: active + pending + expired). Cancelled policies are hidden from the client
+  # dashboard entirely (VKAI-010) and excluded from N. Because cancelled policies don't render,
+  # the visible policies are exactly the rendered <article class="policy-card"> cards, so this
+  # scenario asserts the heading renders a "(N)" count and that N equals the total number of
+  # policy cards actually rendered on the dashboard. Locators grounded on the client subagent's
+  # stable-DOM report for client commit e58fa3c (h1.page-title retained, only its text changed)
+  # — to be re-verified on the live run.
+  @Positive @VJS-TC-DASH-005
+  Scenario: Dashboard heading shows the visible-policy count in parentheses
+    Given the customer is logged in
+    Then the "Your Policies" heading should show a policy count in parentheses
+    And the heading policy count should equal the number of visible policy cards
+
+  # VJS-TC-DASH-006  (VKAI-011 - authored, HELD / not currently live-verifiable)
+  # Boundary: with zero policies the heading reads exactly "Your Policies (0)".
+  #
+  # NOT AUTOMATED-GREEN RIGHT NOW — tagged @Manual so it is excluded from the
+  # "@Client and not @Manual" run. The standing live QA account always holds policies (both
+  # Active and Pending buckets are populated), so a zero-policy state is not reproducible
+  # UI-only on it: activation is provider/Entra-side (out of scope) and the client UI cannot
+  # empty the account (Cancel only removes a *pending* policy, and the account also holds
+  # active/expired policies). A freshly-registered account would reach zero, but its
+  # empty-dashboard markup is unverified — when total policies == 0 the pre-existing
+  # .empty-state "No policies yet" block renders, and whether the h1.page-title heading (and
+  # its "(0)") renders alongside it is unknown without a fresh live DOM capture. Automating
+  # this honestly needs that capture first. Do not fake a zero state. Same disposition as
+  # DASH-002/DASH-004/CANCEL-004 — a data-state limitation, not the §5 Entra/architecture
+  # blocker; deliberately NO Jira issue (held/unverifiable cases get no live Test Case).
+  @Boundary @Manual @VJS-TC-DASH-006
+  Scenario: Dashboard heading reads "Your Policies (0)" when the customer has no policies
+    Given a client account with no policies
+    When the customer views the dashboard
+    Then the "Your Policies" heading should read exactly "Your Policies (0)"
 
   # VJS-TC-DASH-003  (VKAI-006 - new)
   # The dashboard now splits enrolled policies into two sections instead of one list:

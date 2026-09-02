@@ -1,6 +1,8 @@
 package com.vkailabs.insurance.automation.pages;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.TimeoutException;
@@ -42,6 +44,12 @@ public class DashboardPage extends BasePage {
     // and a <span class="summary-label"> ("Active" / "Pending"). Always present once the
     // dashboard data has loaded, so it doubles as the dashboard-loaded content marker.
     private final By policySummary = By.cssSelector("div.policy-summary");
+    // Dashboard page heading (VKAI-011): <h1 class="page-title">. Its text changed from
+    // "Your policies" to "Your Policies (N)", where N = count of visible (non-cancelled)
+    // policies. Located by class, not text, so the (N) suffix doesn't break the selector.
+    private final By pageTitle = By.cssSelector("h1.page-title");
+    // Matches the "(N)" policy-count segment in the "Your Policies (N)" heading.
+    private static final Pattern HEADING_COUNT = Pattern.compile("\\((\\d+)\\)");
     private final By logoutControl = By.xpath(
             "//*[self::button or self::a][normalize-space()='Logout']");
     private final By dashboardNav = By.xpath(
@@ -129,13 +137,20 @@ public class DashboardPage extends BasePage {
      * True if the summary box for {@code label} precedes the given heading in document
      * order (i.e. renders above it). Uses the XPath {@code following::} axis so the check
      * is about real DOM position, not pixel geometry.
+     *
+     * <p>Matches the heading by {@code starts-with} rather than exact text: since VKAI-011
+     * the page heading renders as {@code "Your Policies (N)"} (a dynamic count suffix), so an
+     * exact-text match no longer works. {@code starts-with "Your Policies"} uniquely targets
+     * the {@code <h1 class="page-title">} heading and is not matched by the
+     * "Your Active Policies" / "Your Pending Policies" section {@code <h2>}s.
      */
     public boolean isSummaryAboveHeading(String label, String heading) {
         By locator = By.xpath(String.format(
                 "//div[contains(concat(' ', normalize-space(@class), ' '), ' summary-box ')]"
                 + "[.//span[contains(concat(' ', normalize-space(@class), ' '), ' summary-label ')]"
                 + "[normalize-space()='%s']]"
-                + "/following::*[self::h1 or self::h2 or self::h3][normalize-space()='%s']",
+                + "/following::*[self::h1 or self::h2 or self::h3]"
+                + "[starts-with(normalize-space(), '%s')]",
                 label, heading));
         return !driver.findElements(locator).isEmpty();
     }
@@ -156,6 +171,48 @@ public class DashboardPage extends BasePage {
                 "//article[contains(concat(' ', normalize-space(@class), ' '), ' policy-card ')]"
                 + "[.//span[contains(concat(' ', normalize-space(@class), ' '), ' %s ')]]",
                 statusClass));
+        return driver.findElements(cards).size();
+    }
+
+    // ---- Dashboard heading policy count (VKAI-011) --------------------------------
+    //
+    // The dashboard's <h1 class="page-title"> heading changed from "Your policies" to
+    // "Your Policies (N)", where N = the count of the customer's visible policies (all
+    // non-cancelled: active + pending + expired). Cancelled policies are hidden from the
+    // client dashboard entirely (VKAI-010) and excluded from N. Because cancelled policies
+    // don't render, the set of visible policies is exactly the set of rendered policy cards,
+    // so N is verified against the total rendered <article class="policy-card"> count.
+    // Grounded on the client subagent's stable-DOM report for commit e58fa3c (the h1.page-title
+    // element is retained; only its text changed) — re-verified on the live run.
+
+    /** The full text of the dashboard's {@code <h1 class="page-title">} heading. */
+    public String pageTitleText() {
+        return wait.waitForVisible(pageTitle).getText().trim();
+    }
+
+    /** True if the page-title heading includes a {@code "(N)"} policy-count segment. */
+    public boolean headingHasPolicyCount() {
+        return HEADING_COUNT.matcher(pageTitleText()).find();
+    }
+
+    /**
+     * The integer N inside the {@code "(N)"} of the "Your Policies (N)" heading.
+     * Throws {@link IllegalStateException} if the heading has no {@code (N)} segment.
+     */
+    public int policyCountInHeading() {
+        String text = pageTitleText();
+        Matcher m = HEADING_COUNT.matcher(text);
+        if (!m.find()) {
+            throw new IllegalStateException(
+                    "Dashboard heading '" + text + "' has no (N) policy-count segment");
+        }
+        return Integer.parseInt(m.group(1));
+    }
+
+    /** Total number of visible policy cards rendered on the dashboard (across all sections). */
+    public int totalPolicyCardCount() {
+        By cards = By.xpath(
+                "//article[contains(concat(' ', normalize-space(@class), ' '), ' policy-card ')]");
         return driver.findElements(cards).size();
     }
 

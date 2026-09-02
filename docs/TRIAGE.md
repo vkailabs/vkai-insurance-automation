@@ -83,3 +83,19 @@ reopening the §8 deleted-30 decision. Additions:
   client UI, **not** a member of the deleted 30, not a reopening of §8. VJS-49 Scenario 4
   (provider shows "Cancelled", Approver can't approve) is provider-portal + cross-cloud sync —
   permanently out of scope (§5). Automated count after VKAI-010: 16 scenarios / 18 execution rows.
+- **VKAI-011 (2026-09-02):** the dashboard `<h1 class="page-title">` heading was renamed from
+  "Your policies" to **"Your Policies (N)"**, where N = the count of the customer's **visible**
+  (non-cancelled: active + pending + expired) policies; cancelled policies are hidden and excluded
+  (consistent with VKAI-010), and zero policies → "Your Policies (0)". Added `DASH-005`
+  (`(VKAI-011 - new)`) — asserts the heading renders a "(N)" count that equals the total rendered
+  `article.policy-card` count (self-consistent, since only visible policies render). Built against
+  the client subagent's stable-DOM report for client commit `e58fa3c` (h1.page-title retained,
+  text changed); this was a **build-only pass — live verification pending**. Also **re-grounded
+  the DASH-001 regression**: its positional assertion had matched the heading by exact text
+  "Your policies", which the rename would break; it now matches by `starts-with "Your Policies"`
+  against the still-present `h1.page-title`. `DASH-006` (zero-policy "Your Policies (0)" boundary)
+  authored but **held `@Manual`**, deliberately **no** Jira issue — same data-state limitation as
+  DASH-002/DASH-004/CANCEL-004 (the standing QA account always holds policies; no reproducible
+  zero-policy state UI-only; empty-dashboard heading markup unverified). This is genuinely-new
+  client UI per §9, **not** a member of the deleted 30, not a reopening of §8. Automated count
+  after VKAI-011 (once DASH-005 is live-verified): 17 scenarios / 19 execution rows.

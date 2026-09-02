@@ -59,6 +59,29 @@ public class DashboardSteps {
                 .isEqualTo(dashboard.policyCardCountByStatus(status));
     }
 
+    // ---- Dashboard heading policy count (VKAI-011 / VJS-TC-DASH-005) --------------
+
+    @Then("the {string} heading should show a policy count in parentheses")
+    public void the_heading_should_show_a_policy_count_in_parentheses(String heading) {
+        DashboardPage dashboard = context.dashboardPage();
+        assertThat(dashboard.pageTitleText())
+                .as("the dashboard page heading should start with '%s'", heading)
+                .startsWith(heading);
+        assertThat(dashboard.headingHasPolicyCount())
+                .as("the heading '%s' should include a (N) policy count",
+                        dashboard.pageTitleText())
+                .isTrue();
+    }
+
+    @Then("the heading policy count should equal the number of visible policy cards")
+    public void the_heading_policy_count_should_equal_the_number_of_visible_policy_cards() {
+        DashboardPage dashboard = context.dashboardPage();
+        assertThat(dashboard.policyCountInHeading())
+                .as("the (N) count in the heading should equal the number of rendered "
+                        + "(visible, non-cancelled) policy cards")
+                .isEqualTo(dashboard.totalPolicyCardCount());
+    }
+
     // ---- Active vs Pending policy sections (VKAI-006 / VJS-TC-DASH-003) -----------
 
     @Then("a policy section titled {string} should be displayed")
