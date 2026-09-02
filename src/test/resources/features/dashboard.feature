@@ -23,7 +23,7 @@ Feature: Dashboard Policy Summary
     And the "Active" summary count should equal the number of "Active" policy cards
     And the "Pending" summary count should equal the number of "Pending" policy cards
 
-  # VJS-TC-DASH-005  (VKAI-011 - new)
+  # VJS-TC-DASH-005  (VJS-54, VKAI-011)
   # VKAI-011: the dashboard's <h1 class="page-title"> heading changed from "Your policies" to
   # "Your Policies (N)", where N = the count of the customer's visible policies (all
   # non-cancelled: active + pending + expired). Cancelled policies are hidden from the client
@@ -32,7 +32,7 @@ Feature: Dashboard Policy Summary
   # scenario asserts the heading renders a "(N)" count and that N equals the total number of
   # policy cards actually rendered on the dashboard. Locators grounded on the client subagent's
   # stable-DOM report for client commit e58fa3c (h1.page-title retained, only its text changed)
-  # — to be re-verified on the live run.
+  # — verified live 2026-09-03 (PASSED).
   @Positive @VJS-TC-DASH-005
   Scenario: Dashboard heading shows the visible-policy count in parentheses
     Given the customer is logged in

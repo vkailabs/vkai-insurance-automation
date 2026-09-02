@@ -87,10 +87,10 @@ reopening the §8 deleted-30 decision. Additions:
   "Your policies" to **"Your Policies (N)"**, where N = the count of the customer's **visible**
   (non-cancelled: active + pending + expired) policies; cancelled policies are hidden and excluded
   (consistent with VKAI-010), and zero policies → "Your Policies (0)". Added `DASH-005`
-  (`(VKAI-011 - new)`) — asserts the heading renders a "(N)" count that equals the total rendered
+  (`VJS-54`) — asserts the heading renders a "(N)" count that equals the total rendered
   `article.policy-card` count (self-consistent, since only visible policies render). Built against
   the client subagent's stable-DOM report for client commit `e58fa3c` (h1.page-title retained,
-  text changed); this was a **build-only pass — live verification pending**. Also **re-grounded
+  text changed), then **live-verified 2026-09-03 (PASSED)**. Also **re-grounded
   the DASH-001 regression**: its positional assertion had matched the heading by exact text
   "Your policies", which the rename would break; it now matches by `starts-with "Your Policies"`
   against the still-present `h1.page-title`. `DASH-006` (zero-policy "Your Policies (0)" boundary)
@@ -98,4 +98,4 @@ reopening the §8 deleted-30 decision. Additions:
   DASH-002/DASH-004/CANCEL-004 (the standing QA account always holds policies; no reproducible
   zero-policy state UI-only; empty-dashboard heading markup unverified). This is genuinely-new
   client UI per §9, **not** a member of the deleted 30, not a reopening of §8. Automated count
-  after VKAI-011 (once DASH-005 is live-verified): 17 scenarios / 19 execution rows.
+  after VKAI-011 (DASH-005 live-verified 2026-09-03): 17 scenarios / 19 execution rows.
